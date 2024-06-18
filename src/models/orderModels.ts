@@ -1,9 +1,15 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
-const orderSchema = new Schema({
-  broth: { type: Schema.Types.ObjectId, ref: "BrothModel", required: true },
-  protein: { type: Schema.Types.ObjectId, ref: "ProteinModel", required: true },
-  orderNumber: { type: String, required: true },
+interface IOrder extends Document {
+  brothId: string;
+  proteinId: string;
+}
+
+const orderSchema = new Schema<IOrder>({
+  brothId: { type: String, required: true },
+  proteinId: { type: String, required: true },
 });
 
-export default model("OrderModel", orderSchema);
+const OrderModels = model<IOrder>("Order", orderSchema);
+
+export default OrderModels;

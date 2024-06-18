@@ -1,29 +1,23 @@
 import { Request, Response } from "express";
-import orderModels from "../models/orderModels";
-import axios from "axios";
-
-const API_KEY = process.env.API_KEY;
-const ORDER_ID_URL = 'https://api.tech.redventures.com.br/orders/generate-id';
+import OrderModels from "../models/orderModels";
 
 export const createOrder = async (req: Request, res: Response) => {
-  const { broth, protein } = req.body;
+  const { brothId, proteinId } = req.body;
 
   try {
-    const response = await axios.post(
-      ORDER_ID_URL,
-      {},
-      {
-        headers: { "x-api-key": API_KEY },
-      }
-    );
-
-    const orderNumber = response.data.orderNumber;
-
-    const order = new orderModels({ broth, protein, orderNumber });
-    await order.save();
-
-    res.status(201).json({ message: "Order created", orderNumber });
+    if (!brothId || !proteinId) {
+      return res
+        .status(400)
+        .json({ error: "both brothId and proteinId are required" });
+    }
+    const newOrder = await OrderModels.create({ brothId, proteinId });
+    res.status(201).json({
+      id: newOrder._id,
+      description: "Salt and Chasu Ramen",
+      image: "https://tech.redventures.com.br/icons/ramen/ramenChasu.png", // Exemplo fixo de imagem
+    });
   } catch (error) {
-    res.status(500).json({ message: "Failed to create order", error });
+    console.error("Error placing order:", error);
+    res.status(500).json({ error: "could not place order" });
   }
 };

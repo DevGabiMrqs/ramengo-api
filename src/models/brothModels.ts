@@ -1,7 +1,23 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
-const brothSchema = new Schema({
+interface IBroth extends Document {
+  id: string;
+  imageInactive: string;
+  imageActive: string;
+  name: string;
+  description: string;
+  price: number;
+}
+
+const brothSchema = new Schema<IBroth>({
+  id: { type: String, required: true },
+  imageInactive: { type: String, required: true },
+  imageActive: { type: String, required: true },
   name: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
 });
 
-export default model("BrothModel", brothSchema);
+const BrothModels = model<IBroth>("BrothModel", brothSchema);
+
+export default BrothModels;
